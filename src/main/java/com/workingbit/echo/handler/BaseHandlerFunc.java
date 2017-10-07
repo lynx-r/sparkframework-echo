@@ -2,6 +2,7 @@ package com.workingbit.echo.handler;
 
 import com.workingbit.echo.common.ErrorMessages;
 import com.workingbit.echo.model.Answer;
+import com.workingbit.echo.util.CryptoUtils;
 import spark.Request;
 import spark.utils.StringUtils;
 
@@ -14,16 +15,22 @@ import static java.net.HttpURLConnection.HTTP_BAD_REQUEST;
 public interface BaseHandlerFunc {
 
   default String checkSign(Request request) {
+    String sign = request.headers("sign");
+    String signRequest = request.headers("request-sign");
+    System.out.println(String.format("SIGN %s, SIGN_REQUEST %s", sign, signRequest));
     try {
-      String apiKey = System.getenv("API_KEY");
-      if (StringUtils.isBlank(apiKey)) {
-        System.out.println("Ignore api key");
+      String vkApiKeyEnv = System.getenv("VK_API_KEY_ENV");
+      if (StringUtils.isBlank(vkApiKeyEnv)) {
+        System.out.println("Ignore vk sign key");
         return null;
       }
-      return dataToJson(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.MALFORMED_REQUEST));
+      String sig = CryptoUtils.encode(vkApiKeyEnv, signRequest);
+      if (!sig.equals(sign)) {
+        return dataToJson(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.MALFORMED_REQUEST));
+      }
     } catch (Exception e) {
-      e.printStackTrace();
+      return dataToJson(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.MALFORMED_REQUEST));
     }
-    return dataToJson(Answer.error(HTTP_BAD_REQUEST, ErrorMessages.MALFORMED_REQUEST));
+    return null;
   }
 }
