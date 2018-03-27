@@ -1,4 +1,4 @@
-# Spark Framework пример варианта определения контроллеров веб-приложения
+# Building a Simple RESTful API with Java Spark
 
 ## Что вы изучите
 
