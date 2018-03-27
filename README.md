@@ -1,4 +1,4 @@
-# Building a Simple RESTful API with Java Spark
+# Создание простого RESTful API с Java Spark
 
 ## Что вы изучите
 
