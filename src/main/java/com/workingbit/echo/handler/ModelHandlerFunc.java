@@ -17,7 +17,7 @@ import static com.workingbit.echo.JsonUtils.jsonToData;
 public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc {
 
   default String handleRequest(Request request, Response response, Class<T> clazz) {
-    String check = commonHeadersCheck(request);
+    String check = commonCheck(request);
     if (StringUtils.isNotBlank(check)) {
       return check;
     }

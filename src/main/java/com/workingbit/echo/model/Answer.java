@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import static java.net.HttpURLConnection.HTTP_CREATED;
 import static java.net.HttpURLConnection.HTTP_OK;
 
-//@JsonDeserialize(using = AnswerDeserializer.class)
 @NoArgsConstructor
 @Data
 public class Answer {

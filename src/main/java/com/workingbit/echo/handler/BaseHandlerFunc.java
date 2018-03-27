@@ -7,7 +7,7 @@ import spark.Request;
  */
 public interface BaseHandlerFunc {
 
-  default String commonHeadersCheck(Request request) {
+  default String commonCheck(Request request) {
     // do your smart check here
     return null;
   }

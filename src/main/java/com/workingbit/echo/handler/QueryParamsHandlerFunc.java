@@ -13,10 +13,10 @@ import static com.workingbit.echo.JsonUtils.dataToJson;
  * Created by Aleksey Popryaduhin on 16:27 01/10/2017.
  */
 @FunctionalInterface
-public interface QueryParamsHandlerFunc  extends BaseHandlerFunc{
+public interface QueryParamsHandlerFunc extends BaseHandlerFunc {
 
   default String handleRequest(Request request, Response response) {
-    String check = commonHeadersCheck(request);
+    String check = commonCheck(request);
     if (StringUtils.isNotBlank(check)) {
       return check;
     }

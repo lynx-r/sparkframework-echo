@@ -2,11 +2,9 @@
 
 ## Что вы изучите
 
-Вы изучите как можно определять обобщенные контроллеры с помощью функциональных интерфейсов Java 8. Пример кода на GitHub https://github.com/helloalleo/spark-example.
+Вы изучите как можно определять обобщенные контроллеры с помощью функциональных интерфейсов Java 8. [Пример кода на GitHub](https://github.com/lynx-r/sparkframework-echo.git).
 
-### Структура проекта
-
-    EchoApplication.java
+### EchoApplication.java
 
 Это класс который связывает ваше приложение воедино. Когда вы откроете этот класс вы сразу должны понять как всё работает:
 
@@ -51,7 +49,7 @@ public class EchoApplication {
 
 ## Path и Controller.field
 
-В классе Path.java я держу точки входа в REST API в виде констант. В этом приложении только два обработчика запросов, которые помещены в один контроллер EchoController. Так как этот контроллер не большой, приведу весь его код:
+В классе Path.java я держу точки входа в REST API в виде констант. В этом приложении только два обработчика запросов, которые помещены в один контроллер EchoController. Так как этот контроллер не большой. Приведу весь его код:
 
 ```java
 public class EchoController {
@@ -74,20 +72,20 @@ public class EchoController {
 }
 ```
 
-Первый обработчик, есть лямбда функция, телом которой является функциональный интерфейс QueryParamsHandlerFunc. Входным параметром этого интерфейса является мап с частью запросов из ссылки, т.е. /echo?echo=message. В теле этого интерфейса выполняется вызов нашего сервиса. Т.е. сервис получает уже обработанные параметры и никак не зависит от контроллера, что облегчает тестирование. Сервис возвращает Optional, который мапится на класс ответа Answer, который содержит тело ответа, enum типа класса тела ответа и HTTP код ответа. В случае ошибки возвращается класс Answer с кодом ошибки и сообщением об ошибке. Этот интерфейс имеет метод handleRequest, в который передаются запрос и ответ из контроллера-обработчика Func::handlerRequest(req, res).
+Первый обработчик, есть лямбда функция, телом которой является функциональный интерфейс QueryParamsHandlerFunc. Входным параметром этого интерфейса является словарь с частью запросов из ссылки, т.е. /echo?echo=message. В теле этого интерфейса выполняется вызов нашего сервиса. Т.е. сервис получает уже обработанные параметры и никак не зависит от контроллера, что облегчает тестирование. Сервис возвращает Optional, который отображается на класс ответа Answer, который содержит тело ответа. В случае ошибки возвращается класс Answer с кодом ошибки и сообщением об ошибке. Этот интерфейс имеет метод handleRequest, в который передаются запрос и ответ из контроллера-обработчика Func::handlerRequest(req, res).
 
 Второй обработчик, возвращает результат, который формирует примерно такой же интерфейс как и выше, только в качестве шаблонного параметра указан класс, наследующий интерфейс Payload. Обработка этого запроса ни чем не отличается от описанного выше. Разница лишь в том, что метод handleRequest этого интерфейса получает класс нашего Payload в качестве параметра ModelHandlerFunc<Ping>.
 
-    QueryParamsHandlerFunc.java
+### QueryParamsHandlerFunc.java
 
-Это функциональный интерфейс, наследующий базовый интерфейс, в который вынесены общие для всех обработчиков действия. Их мы рассмотрим позднее. В этом интерфейсе определен метод по умолчанию handleRequest, который принимает в качестве входных параметров объекты запроса и ответа, выполняет проверку сигнатуры, вызывая метод базового класса checkSign(request). Далее, берёт из запроса параметры запроса (/echo?echo=message), передает их в метод интерфейса process, после обработки запроса указывает код ответа и сериализует этот ответ в Json.
+Это функциональный интерфейс, наследующий базовый интерфейс, в который вынесены общие для обработчика GET запросов действия. В этом интерфейсе определен метод по умолчанию QueryParamsHandlerFunc::handleRequest, который принимает в качестве входных параметров объекты запроса и ответа. Выполняет проверку сигнатуры, вызывая метод базового класса BaseHandlerFunc::commonCheck(request). И если он возвращает не пустое значение, которое считается ошибкой, то отправляет его в качестве ответа. Далее, берёт из запроса параметры запроса (/echo?echo=message), передает их в метод определенный в интерфейсе QueryParamsHandlerFunc::process, после обработки запроса указывает код ответа и сериализует этот ответ в Json.
 
 ```java
 @FunctionalInterface
-public interface QueryParamsHandlerFunc  extends BaseHandlerFunc{
+public interface QueryParamsHandlerFunc  extends BaseHandlerFunc {
 
   default String handleRequest(Request request, Response response) {
-    String check = commonHeadersCheck(request);
+    String check = commonCheck(request);
     if (StringUtils.isNotBlank(check)) {
       return check;
     }
@@ -101,16 +99,16 @@ public interface QueryParamsHandlerFunc  extends BaseHandlerFunc{
 }
 ```
 
-    ModelHandlerFunc.java
+### ModelHandlerFunc.java
 
-Этот интерфейс работает так же как и описанный выше, с тем лишь отличаем, что из запроса берётся тело запроса в формате Json и конвертируется в класс, наследующий Payload. Конвертированный класс, так же как и при обработке параметров запроса передается в метод интерфейса process.
+Этот интерфейс работает так же как и описанный выше, с тем лишь отличаем, что он обрабатывает POST запросы. Конвертированный класс, так же как и при обработке параметров запроса передается в метод интерфейса ModelHandlerFunc::process.
 
 ```java
 @FunctionalInterface
 public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc {
 
   default String handleRequest(Request request, Response response, Class<T> clazz) {
-    String check = commonHeadersCheck(request);
+    String check = commonCheck(request);
     if (StringUtils.isNotBlank(check)) {
       return check;
     }
@@ -125,14 +123,14 @@ public interface ModelHandlerFunc<T extends Payload> extends BaseHandlerFunc {
 }
 ```
 
-    BaseHandlerFunc.java
+### BaseHandlerFunc.java
 
-Это интерфейс, который агрегирует в себе общие методы. Для примера я взял метод проверки сигнатуры запроса из приложения в vk.com.
+Это интерфейс, который агрегирует в себе общие методы.
 
 ```java
 public interface BaseHandlerFunc {
 
-  default String commonHeadersCheck(Request request) {
+  default String commonCheck(Request request) {
     // do your smart check here
     return null;
   }
@@ -140,7 +138,11 @@ public interface BaseHandlerFunc {
 
 ```
 
-# Тест контроллера
+## Jackson Polymorphic Type Handling Annotations
+
+Для сереализации в JSON класса Answer и его нагрузки был применен полиморфизм JsonTypeInfo. Подробнее по ссылкам.
+
+#№ Тест контроллера
 
 Для тестирования контроллера воспользуемся библиотекой https://github.com/despegar/spark-test. Пример кода тестирование.
 
@@ -197,3 +199,9 @@ public class EchoControllerTest {
 # Вывод
 
 Скорее всего, вам не понадобится SparkFramework, т.к. у вас есть Spring, но если вам нужна простая и быстрая альтернатива Node.js для деплоя на микросервис, то SparkFramework вам подойдёт.
+
+# Ссылки
+
+* [Creating a library website with login and multiple languages](http://sparkjava.com/tutorials/application-structure)
+* [Jackson Annotation Examples](http://www.baeldung.com/jackson-annotations)
+* [Jackson Polymorphic Type Handling Annotations](https://fasterxml.github.io/jackson-annotations/javadoc/2.2.0/com/fasterxml/jackson/annotation/JsonTypeInfo.html)

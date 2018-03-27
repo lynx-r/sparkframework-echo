@@ -17,7 +17,7 @@ import static com.workingbit.echo.JsonUtils.dataToJson;
 public interface ParamsHandlerFunc extends BaseHandlerFunc{
 
   default String handleRequest(Request request, Response response) {
-    String check = commonHeadersCheck(request);
+    String check = commonCheck(request);
     if (StringUtils.isNotBlank(check)) {
       return check;
     }
