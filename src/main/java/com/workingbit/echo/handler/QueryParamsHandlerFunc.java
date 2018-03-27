@@ -6,7 +6,7 @@ import spark.Request;
 import spark.Response;
 import spark.utils.StringUtils;
 
-import static com.workingbit.echo.util.JsonUtils.dataToJson;
+import static com.workingbit.echo.JsonUtils.dataToJson;
 
 
 /**
@@ -16,13 +16,13 @@ import static com.workingbit.echo.util.JsonUtils.dataToJson;
 public interface QueryParamsHandlerFunc  extends BaseHandlerFunc{
 
   default String handleRequest(Request request, Response response) {
-    String check = checkSign(request);
+    String check = commonHeadersCheck(request);
     if (StringUtils.isNotBlank(check)) {
       return check;
     }
     QueryParamsMap queryParamsMap = request.queryMap();
     Answer processed = process(queryParamsMap);
-    response.status(processed.getCode());
+    response.status(processed.getStatusCode());
     return dataToJson(processed);
   }
 

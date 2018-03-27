@@ -1,4 +1,4 @@
-package com.workingbit.echo.service;
+package com.workingbit.echo;
 
 
 import com.workingbit.echo.model.Echo;

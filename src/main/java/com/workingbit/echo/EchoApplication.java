@@ -1,9 +1,5 @@
 package com.workingbit.echo;
 
-import com.workingbit.echo.controller.EchoController;
-import com.workingbit.echo.service.EchoService;
-import com.workingbit.echo.util.JsonUtils;
-import com.workingbit.echo.util.Path;
 import org.apache.log4j.Logger;
 
 import static spark.Spark.*;

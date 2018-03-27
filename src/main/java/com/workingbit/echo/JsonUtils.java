@@ -1,13 +1,10 @@
-package com.workingbit.echo.util;
+package com.workingbit.echo;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.apache.log4j.Logger;
 
 import java.io.IOException;
 
 public class JsonUtils {
-  private static Logger logger = Logger.getLogger(JsonUtils.class);
-
   private static final ObjectMapper mapper = new ObjectMapper();
 
   public static void registerModules() {

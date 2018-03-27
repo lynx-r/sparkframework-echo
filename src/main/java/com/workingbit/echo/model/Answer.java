@@ -1,49 +1,53 @@
 package com.workingbit.echo.model;
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.workingbit.echo.common.AnswerDeserializer;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@JsonDeserialize(using = AnswerDeserializer.class)
+import static java.net.HttpURLConnection.HTTP_CREATED;
+import static java.net.HttpURLConnection.HTTP_OK;
+
+//@JsonDeserialize(using = AnswerDeserializer.class)
 @NoArgsConstructor
 @Data
 public class Answer {
 
-  private int code;
-  private Object body;
-  private String error;
-  private Type type;
+  int statusCode;
+  private Payload body;
+  private MessageResponse message;
 
-  public Answer(int code, String error) {
-    this.code = code;
-    this.error = error;
-    this.type = Type.ERROR;
-  }
-
-  public Answer(int code, Object body, Type type) {
-    this.code = code;
+  @JsonCreator
+  private Answer(@JsonProperty("body") Payload body, @JsonProperty("message") MessageResponse message) {
     this.body = body;
-    this.type = type;
+    this.message = message;
   }
 
-  public static Answer ok(int code, Object body, Type classType) {
-    return new Answer(code, body, classType);
-  }
-  
-  public static Answer okEcho(int code, Object body) {
-    return new Answer(code, body, Type.ECHO);
+  public static Answer ok(Payload body) {
+    return new Answer(body, MessageResponse.ok())
+        .statusCode(HTTP_OK);
   }
 
-  public static Answer okPong(int code, Object body) {
-    return new Answer(code, body, Type.PONG);
+  public static Answer created(Payload body) {
+    return new Answer(body, MessageResponse.created())
+        .statusCode(HTTP_CREATED);
   }
 
-  public static Answer error(int code, String message) {
-    return new Answer(code, message);
+  public static Answer error(int statusCode, String message) {
+    return new Answer(null, MessageResponse.error(statusCode, message))
+        .statusCode(statusCode);
   }
 
-  public enum Type {
-    ECHO, PONG, ERROR
+  public int getStatusCode() {
+    return statusCode;
+  }
+
+  public void setStatusCode(int statusCode) {
+    this.statusCode = statusCode;
+  }
+
+  public Answer statusCode(int statusCode) {
+    setStatusCode(statusCode);
+    return this;
   }
 }

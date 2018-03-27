@@ -1,4 +1,4 @@
-package com.workingbit.echo.common;
+package com.workingbit.echo;
 
 /**
  * Created by Aleksey Popryaduhin on 23:07 06/10/2017.

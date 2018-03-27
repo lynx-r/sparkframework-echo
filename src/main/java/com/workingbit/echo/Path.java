@@ -1,4 +1,4 @@
-package com.workingbit.echo.util;
+package com.workingbit.echo;
 
 public class Path {
   public static final String ECHO = "/echo";

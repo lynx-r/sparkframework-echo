@@ -16,8 +16,8 @@ import spark.servlet.SparkApplication;
 
 import java.util.Random;
 
-import static com.workingbit.echo.util.JsonUtils.dataToJson;
-import static com.workingbit.echo.util.JsonUtils.jsonToData;
+import static com.workingbit.echo.JsonUtils.dataToJson;
+import static com.workingbit.echo.JsonUtils.jsonToData;
 import static junit.framework.TestCase.assertEquals;
 
 /**
