@@ -1,3 +1,5 @@
+[Статья на Хабре](https://habr.com/post/352732/)
+
 # Создание простого RESTful API с Java Spark
 
 ## Что вы изучите
